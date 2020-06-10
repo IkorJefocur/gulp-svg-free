@@ -1,0 +1,18 @@
+{
+  "name": "gulp-svg-free",
+  "version": "1.0.0",
+  "description": "Inline SVG's without parsing all html file",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ikor Jefocur",
+  "license": "ISC",
+  "devDependencies": {
+    "node-html-parser": "^1.2.19",
+    "string-replace-async": "^1.2.1",
+    "through2": "^3.0.1",
+    "xml-minifier": "^1.0.1",
+    "xml-parse": "^0.4.0"
+  }
+}
