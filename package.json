@@ -8,7 +8,7 @@
   },
   "author": "Ikor Jefocur",
   "license": "ISC",
-  "devDependencies": {
+  "dependencies": {
     "node-html-parser": "^1.2.19",
     "string-replace-async": "^1.2.1",
     "through2": "^3.0.1",
