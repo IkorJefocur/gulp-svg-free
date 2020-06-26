@@ -1,9 +1,7 @@
 const through = require('through2'),
 fs = require('fs').promises,
 replaceAsync = require('string-replace-async'),
-parseHtml = require('node-html-parser').parse,
-{parse: parseXml, stringify: stringifyXml} = require('xml-parse'),
-minifyXml = require('xml-minifier').minify;
+parseHtml = require('node-html-parser').parse;
 
 
 module.exports = function(options = {}) {
@@ -22,24 +20,21 @@ module.exports = function(options = {}) {
 		.catch(function() {
 			throw new Error(`Cannot open file: ${path}`);
 		});
-
-		sourceSvg.removeAttribute(attr);
-		const fileXml = parseXml(await file.readFile() + '');
+		const fileXml = await file.readFile();
 		file.close();
 
-		const fileSvg = fileXml.find(function findSvg(xml) {
-			if (xml.tagName === 'svg')
-				return true;
-			return xml.childNodes.find(child => findSvg(child));
-		});
+		const fileSvg = parseHtml((fileXml + '').replace(/<\?xml.*?\?>/)).childNodes[0];
+		if (!fileSvg.setAttribute)
+			throw new Error(`Invalid svg: ${path}`);
 
+		sourceSvg.removeAttribute(attr);
 		sourceSvg.rawAttrs.replace(/([a-zA-Z]+)(\=".+?"|\='.+?'|\=\S+)?/g, function(match, key) {
 			const value = sourceSvg.getAttribute(key);
-			fileSvg.attributes[key] = value;
+			fileSvg.setAttribute(key, value);
 			return match;
 		});
 
-		return minifyXml(stringifyXml([fileSvg]));
+		return fileSvg;
 	});
 
 	return through.obj(async function(file, enc, next) {
