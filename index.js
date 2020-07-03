@@ -1,5 +1,6 @@
 const through = require('through2'),
 fs = require('fs').promises,
+PluginError = require('plugin-error'),
 replaceAsync = require('string-replace-async'),
 parseHtml = require('node-html-parser').parse;
 
@@ -43,8 +44,13 @@ module.exports = function(options = {}) {
 			return;
 		}
 
-		const contents = await main(file.contents.toString());
-		file.contents = new Buffer(contents);
+		try {
+			const contents = await main(file.contents.toString());
+			file.contents = new Buffer(contents);
+		} catch (error) {
+			next(new PluginError('gulp-svg-free', error));
+			return;
+		}
 
 		this.push(file);
 		next();
